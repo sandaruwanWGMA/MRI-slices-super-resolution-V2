@@ -40,3 +40,5 @@ print("Input Tensor Shape:", input_tensor.shape)
 # Feed it to the model
 output = model(input_tensor)
 print("Output shape from model:", output.shape)
+
+# print(model)
