@@ -1,8 +1,3 @@
-import sys
-import os
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import torch
 import torch.nn as nn
 from torchvision.models.video import r3d_18, R3D_18_Weights
@@ -102,3 +97,5 @@ output = model(input_tensor)
 # Verify the shapes
 print("Input shape:", input_tensor.shape)  # Should be [1, 1, 30, 256, 256]
 print("Output shape:", output.shape)  # Should be [1, 1, 150, 256, 256]
+
+print(model)

@@ -1,6 +1,11 @@
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import torch
 import pandas as pd
-from models.modified_3d_resnet_generator import Modified3DResNet
+from models.volumetric_resnet.modified_3d_resnet_generator import Modified3DResNet
 
 
 def save_model_layers_to_csv(model, input_tensor, file_path):
@@ -58,15 +63,8 @@ if __name__ == "__main__":
     # model = r3d_18(weights=R3D_18_Weights.KINETICS400_V1)
     model = Modified3DResNet()
 
-    # Modify the first convolutional layer to accept single-channel input
-    model.stem[0] = torch.nn.Conv3d(
-        1, 64, kernel_size=(3, 7, 7), stride=(1, 2, 2), padding=(1, 3, 3), bias=False
-    )
-
     # Create a dummy input tensor for testing [N, C, D, H, W]
-    dummy_input = torch.randn(
-        1, 1, 48, 128, 128
-    )  # Example: batch size 1, 1 channel, 48 slices, 128x128 image size
+    dummy_input = torch.randn(1, 1, 30, 256, 256)
 
     # Call the function to save the model layers info to a CSV file
     save_model_layers_to_csv(
