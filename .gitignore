@@ -1,1 +1,9 @@
 data/Second\ MRI\ dataset/
+
+new-pipeline/DataSet/
+new-pipeline/Dim-Fixed/
+new-pipeline/Down-Sampled/
+new-pipeline/Header-Updated/
+new-pipeline/Resampled/
+
+data-processing/data/
