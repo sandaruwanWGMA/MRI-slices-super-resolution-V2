@@ -36,8 +36,7 @@ def main():
     scheduler_D = get_scheduler(opt_D, {"lr_policy": "step", "lr_decay_iters": 10})
 
     # Data loader
-    dataloader = get_dataloader()  # Implement this according to your data handling
-
+    dataloader = get_dataloader()
     num_epochs = 50
     for epoch in range(num_epochs):
         for i, data in enumerate(dataloader, 0):
@@ -47,10 +46,10 @@ def main():
             # Update discriminator
             # ===================
             discriminator.zero_grad()
-            # Train with real images
+            # Train with real MRI images
             real_pred = discriminator(real_images)
             loss_D_real = criterion(real_pred, True)
-            # Train with fake images
+            # Train with fake MRI images
             fake_images = generator(
                 torch.randn(real_images.size(0), 1, 30, 256, 256, device=device)
             )
