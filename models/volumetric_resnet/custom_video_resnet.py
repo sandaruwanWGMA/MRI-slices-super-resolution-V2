@@ -68,6 +68,6 @@ class Modified3DResNet(nn.Module):
         return x
 
 
-modified_model = Modified3DResNet()
+# modified_model = Modified3DResNet()
 
-print(modified_model)
+# print(modified_model)

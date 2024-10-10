@@ -1,74 +1,47 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
 import nibabel as nib
+import glob
 import os
 
 
-class MRIGANDataset(Dataset):
-    def __init__(self, data_dir, gen_slices=30, disc_slices=150, transform=None):
-        """
-        Args:
-            data_dir (str): Directory with all the NIfTI files.
-            gen_slices (int): Number of slices for the generator input.
-            disc_slices (int): Number of slices for the discriminator input.
-            transform (callable, optional): Optional transform to be applied on a sample.
-        """
-        self.data_dir = data_dir
-        # Filter files to include only .nii or .nii.gz
-        self.files = sorted(
-            [
-                f
-                for f in os.listdir(data_dir)
-                if f.endswith(".nii") or f.endswith(".nii.gz")
-            ]
-        )
-        self.gen_slices = gen_slices
-        self.disc_slices = disc_slices
+class MRIDataset(Dataset):
+    def __init__(self, base_dir, transform=None):
+        # Define subdirectories for low-res and high-res
+        low_res_dir = os.path.join(base_dir, "Low-Res")
+        high_res_dir = os.path.join(base_dir, "High-Res")
+
+        # Collect files with specific keywords in their names
+        self.low_res_files = sorted(glob.glob(os.path.join(low_res_dir, "*.nii")))
+        self.high_res_files = sorted(glob.glob(os.path.join(high_res_dir, "*.nii")))
+
+        # Ensure we have pairs of files
+        if len(self.low_res_files) != len(self.high_res_files):
+            raise ValueError("Mismatch between number of low-res and high-res files.")
+
+        if len(self.low_res_files) == 0 or len(self.high_res_files) == 0:
+            raise ValueError("No files found. Please check the directory paths.")
+
         self.transform = transform
 
     def __len__(self):
-        return len(self.files)
+        return len(self.low_res_files)
 
     def __getitem__(self, idx):
-        file_path = os.path.join(self.data_dir, self.files[idx])
-        img = nib.load(file_path).get_fdata()
+        # Load low-res and high-res .nii.gz files
+        low_res_path = self.low_res_files[idx]
+        high_res_path = self.high_res_files[idx]
 
-        # Ensure the image has enough slices for both generator and discriminator
-        if img.shape[2] < max(self.gen_slices, self.disc_slices):
-            raise ValueError(f"Not enough slices in file {self.files[idx]}")
+        low_res_data = nib.load(low_res_path).get_fdata()
+        high_res_data = nib.load(high_res_path).get_fdata()
 
-        # Select the required number of slices for generator and discriminator
-        gen_data = img[:, :, : self.gen_slices]
-        disc_data = img[:, :, : self.disc_slices]
+        # Ensure dimensions are compatible: add a channel dimension [1, 30, 256, 256] and [1, 150, 256, 256]
+        low_res_data = torch.tensor(low_res_data, dtype=torch.float32).unsqueeze(0)
+        high_res_data = torch.tensor(high_res_data, dtype=torch.float32).unsqueeze(0)
 
-        # Optionally, apply any transform (e.g., resizing or normalization)
+        # Apply any additional transformations if provided
         if self.transform:
-            gen_data = self.transform(gen_data)
-            disc_data = self.transform(disc_data)
+            low_res_data = self.transform(low_res_data)
+            high_res_data = self.transform(high_res_data)
 
-        # Convert to torch tensors and adjust dimensions to [Channels, Depth, Height, Width]
-        gen_data = torch.tensor(gen_data).unsqueeze(0).permute(0, 2, 1, 3)
-        disc_data = torch.tensor(disc_data).unsqueeze(0).permute(0, 2, 1, 3)
-
-        return gen_data, disc_data
-
-
-if __name__ == "__main__":
-    # Define the data directory and create the dataset
-    data_dir = "./MRI Dataset"  # Replace with your actual path
-    dataset = MRIGANDataset(
-        data_dir=data_dir, gen_slices=30, disc_slices=150, transform=None
-    )
-
-    # Create the DataLoader with num_workers=0 to avoid multiprocessing issues on macOS
-    data_loader = DataLoader(dataset, batch_size=8, shuffle=True, num_workers=0)
-
-    # Test the DataLoader by iterating through a batch
-    for gen_data, disc_data in data_loader:
-        print(
-            "Generator input shape:", gen_data.shape
-        )  # Expected: [N, 1, 30, 256, 256]
-        print(
-            "Discriminator input shape:", disc_data.shape
-        )  # Expected: [N, 1, 150, 256, 256]
-        break
+        return low_res_data, high_res_data

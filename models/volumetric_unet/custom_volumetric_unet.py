@@ -68,7 +68,7 @@ class CustomUNet(nn.Module):
 
 
 # Instantiate the custom model
-model = CustomUNet()
+# model = CustomUNet()
 
 # Example input tensor
 # input_tensor = torch.randn(1, 1, 150, 256, 256)
@@ -78,4 +78,4 @@ model = CustomUNet()
 
 # print("Output shape:", output.shape)
 
-print(model)
+# print(model)

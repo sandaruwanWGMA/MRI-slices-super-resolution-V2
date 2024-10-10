@@ -60,34 +60,7 @@ def main():
             loss_D_real = criterion(real_pred, True)
             # Train with fake MRI images
             fake_images = generator(low_res_images)
-            fake_pred = discriminator(fake_images.detach())
-            loss_D_fake = criterion(fake_pred, False)
-            loss_D = (loss_D_real + loss_D_fake) / 2
-            loss_D.backward()
-            opt_D.step()
-
-            # =================
-            # Update generator
-            # =================
-            generator.zero_grad()
-            fake_pred = discriminator(fake_images)
-            loss_G = criterion(fake_pred, True)
-            loss_G.backward()
-            opt_G.step()
-
-            # Logging
-            if (i + 1) % 100 == 0:
-                print(
-                    f"Epoch [{epoch + 1}/{num_epochs}], Step [{i + 1}/{len(dataloader)}], Loss_D: {loss_D.item()}, Loss_G: {loss_G.item()}"
-                )
-
-            # Update learning rate
-            scheduler_G.step()
-            scheduler_D.step()
-
-    # Save models for later use
-    torch.save(generator.state_dict(), "generator.pth")
-    torch.save(discriminator.state_dict(), "discriminator.pth")
+            # fake_pred = discriminator(fake_images.detach())
 
 
 if __name__ == "__main__":
