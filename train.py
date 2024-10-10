@@ -49,6 +49,7 @@ def main():
     for epoch in range(num_epochs):
         print(f"EPOCH NUMBER: {epoch}")
         for i, data in enumerate(dataloader, 0):
+            print(f"Value of i: {i}")
             high_res_images = data[1].to(device)
             low_res_images = data[1].to(device)
 
