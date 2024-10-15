@@ -80,7 +80,7 @@ def load_model():
 
     # Load the state dict into the model
     state_dict = torch.load(model_path, map_location=torch.device("cpu"))
-    model.load_state_dict(state_dict)
+    model.load_state_dict(state_dict)  # -----
 
     # Set the model to evaluation mode
     model.eval()
