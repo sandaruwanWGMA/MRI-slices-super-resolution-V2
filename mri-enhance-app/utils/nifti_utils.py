@@ -15,3 +15,6 @@ def save_nifti_file(nifti_data, file_path):
         nifti_data, affine=np.eye(4)
     )  # Identity affine matrix for simplicity
     nib.save(new_img, file_path)
+
+
+# updated one
