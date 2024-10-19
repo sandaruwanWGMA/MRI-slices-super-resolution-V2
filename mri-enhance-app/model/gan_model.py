@@ -73,13 +73,13 @@ class Modified3DResNet(nn.Module):
 
 def load_model():
     """Load the pre-trained PyTorch GAN model."""
-    model_path = "/Users/molinduachintha/Documents/Semester 05 Project/MRI-slices-super-resolution-V2/mri-enhance-app/model/generator.pth"  # Path to the pre-trained PyTorch model
+    model_path = "model/generator.pth"  # Path to the pre-trained PyTorch model
 
     # Initialize the model architecture
     model = Modified3DResNet()  # Replace `Generator` with your actual model class
 
     # Load the state dict into the model
-    state_dict = torch.load(model_path, map_location=torch.device("cpu"))
+    state_dict = torch.load(model_path, map_location=torch.device("cpu"), weights_only=True)
     model.load_state_dict(state_dict)  # -----
 
     # Set the model to evaluation mode
